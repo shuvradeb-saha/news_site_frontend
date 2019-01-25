@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>News Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <div class="container" style="margin-bottom: 10px">
+                <div class="roundGray">
+                    <p align="center">
+
+                    <h2 th:text="${showNews.title}">
+
+                    </h2>
+
+                    </p>
+
+                </div>
+
+                <p align="center"><h3 th:text="${showNews.author}"></h3> </p>
+                <p align="center"><h4 th:text="${showNews.date}"></h4> </p>
+                <div th:if="${message}" th:text="${message}" th:class="${'alert ' + alertClass}"/>
+            </div><hr>
+            <div class="container">
+                <p style="text-align: justify " align="ceneter" th:text="${showNews.body}"></p>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <div class="container welcome">
+                <h2>Update News Information</h2>
+            </div>
+            <br>
+            <form th:action="@{'/updateNews?id='+${news.id}}" th:object="${news}" method="post">
+                <div class="form-row">
+                    <div class="col-7">
+                        <label style="float: left">Enter Title</label>
+                        <input type="text" class="form-control" th:if="${news.title}" th:value="${news.title}"
+                               th:field="*{title}" placeholder="Enter Title">
+                        <div class="createNewsError">
+                            <span class="createNewsError" th:if="${#fields.hasErrors('title')}"
+                                  th:errors="*{title}"></span>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="col">
+                        <label style="float: left">Enter News</label>
+                        <textarea class="form-control" rows="5" th:if="${news.body}" th:value="${news.body}"
+                                  th:field="*{body}" id="comment" placeholder="Enter News"
+                        ></textarea>
+
+                        <div class="createNewsError">
+                            <span th:if="${#fields.hasErrors('body')}" th:errors="*{body}"></span>
+                        </div>
+                    </div>
+                    <br>
+
+                    <div class="col">
+                        <label style="float: left">Enter Author</label>
+                        <input type="text" class="form-control" th:if="${news.author}" th:value="${news.author}"
+                               th:field="*{author}" placeholder="Enter Author">
+                        <div class="createNewsError">
+                            <span th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></span>
+                        </div>
+
+                    </div>
+
+                    <br>
+
+                    <div class="col">
+                        <label style="float: left">Enter Date</label>
+                        <input class="form-control" type="date" placeholder="Enter Date" id="date" name="date"
+                               th:if="${news.date}"
+                               th:value="${news.date}">
+                        <div class="createNewsError">
+                            <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></span>
+                        </div>
+
+                    </div>
+                    <br>
+                    <input id="submitNews" type="submit"
+                           onclick="return confirm('Are you sure you want to update the news')"
+                           class="form-control btn-primary" value="Update News" style="width: 200px">
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

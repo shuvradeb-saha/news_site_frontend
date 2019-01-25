@@ -1,0 +1,50 @@
+hr {
+    border: none;
+    height: 5px;
+    /* Set the hr color */
+    color: #333; /* old IE */
+    background-color: #333; /* Modern Browsers */
+}
+
+#submitNews{
+    width: 150px;
+    height: 40px;
+}
+#mybtn{
+    width: 150px;
+    height: 40px;
+}
+
+
+.roundGray{
+    background-color: #333333;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    padding: 10px
+}
+
+
+.welcome{
+    background-color: #1088b4;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    padding: 10px
+}
+
+.createNewsError{
+    margin: 5px;
+    padding: 8px;
+    color: darkred;
+    border-radius: 5px;
+}
+
+.center-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <style>
+        .center-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 50%;
+            min-height: 100vh;
+        }
+
+        .myDiv {
+            background-color: #0e79a0;
+            padding: 10px;
+            height: 80%;
+            width: 50%;
+            border-radius: 5px;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col text-center">
+            <div class="center-screen">
+                <div class="myDiv">
+                    <div class="col text-center">
+                        <h2 style="color: white;">Sign Up Here</h2>
+                    </div>
+                    <br>
+                    <form method="post" th:action="@{/signup}" th:object="${user}">
+                        <div class="form-row">
+                            <div class="col-4">
+                                <input class="form-control" type="text" th:field="${user.fullName}" placeholder="Enter Full Name">
+                                <br>
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="${user.fullName}">
+                                </div>
+                            </div>
+                            <br>
+                            <div class="col-4">
+                                <input class="form-control" type="text" th:field="${user.email}"  placeholder="Enter Email"><br>
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="${user.email}"></div>
+                                <div class="alert alert-danger" th:if="${emailError}" th:text="${emailError}"></div>
+                            </div>
+                            <br>
+                            <div class="col-4">
+                                <input class="form-control" type="password" th:field="${user.password}" placeholder="Enter Password"><br>
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('password')}" th:errors="${user.password}"></div>
+                            </div>
+                            <br>
+                            <div class="col-4">
+                                <input class="form-control" type="password" id="confirmPass" name="confirmPass" placeholder="Confirm Password"><br>
+                                <div class="alert alert-danger" th:if="${passwordError}" th:text="${passwordError}"></div>
+                            </div>
+                            <br>
+                            <div class="col-4">
+                                <input style="float: left" id="submitNews" class="btn btn-success" type="submit" value="Register">
+                                <a th:href="@{/login-page}"><button id="mybtn" style="float: right" type="button" class="btn btn-warning" >Login</button></a>
+                            </div>
+                            <br>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
