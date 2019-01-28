@@ -6,10 +6,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,16 +20,29 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @Controller
 public class UserController {
 	private UserService userService;
+	private RestTemplate restTemplate;
+	private String BASE_URL = "http://localhost:1515/";
 
 
 	@Autowired
 	public UserController(UserService userService, RestTemplate restTemplate) {
 		this.userService = userService;
+		this.restTemplate = restTemplate;
+		MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter =
+			new MappingJackson2HttpMessageConverter();
+		mappingJackson2HttpMessageConverter.setSupportedMediaTypes(
+			Arrays.asList(
+				MediaType.APPLICATION_JSON,
+				MediaType.APPLICATION_OCTET_STREAM));
+		restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
+
 
 	}
 
@@ -55,19 +68,11 @@ public class UserController {
 	}
 
 	@PostMapping("/signup")
-	public String submitSignUpform(@Valid @ModelAttribute User user, BindingResult bindingResult, Model model, @ModelAttribute("confirmPass") String confirmPass, HttpSession session) {
-
-		if (session.getAttribute("user") != null) {
-			return "redirect:/";
-		}
-
+	public String submitSignUpform(@Valid @ModelAttribute User user, BindingResult bindingResult, Model model, @ModelAttribute("confirmPass") String confirmPass) {
 		boolean error = false;
 		if (bindingResult.hasErrors()) {
 			error = true;
 
-		} else if (userService.checkEmailExists(user.getEmail())) {
-			error = true;
-			model.addAttribute("emailError", "Email You Entered Already Exists");
 		} else if (!user.getPassword().equals(confirmPass)) {
 			error = true;
 			model.addAttribute("passwordError", "Confirm Password Doesnot Match");
@@ -75,8 +80,25 @@ public class UserController {
 		if (error) {
 			return "registration";
 		}
-		userService.saveUser(user);
-		model.addAttribute("saved", "Registration Completed. Now Login Please");
+		String signUpUrl = BASE_URL + "signup";
+		HttpEntity<User> request = new HttpEntity<>(user);
+
+
+		ResponseEntity response = null;
+		try {
+			response = restTemplate.postForEntity(signUpUrl, request, String.class);
+
+			if (response.getStatusCode().equals(HttpStatus.OK)) {
+
+				model.addAttribute("saved", response.getBody());
+			} else {
+				model.addAttribute("emailError", response.getBody());
+				return "registration";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		return "login";
 	}
 
@@ -111,42 +133,6 @@ public class UserController {
 			e.printStackTrace();
 		}
 		return null;
-
-
-/*
-		JSONObject userLoginInfo = new JSONObject();
-
-		userLoginInfo.put("email",email);
-		userLoginInfo.put("password",password);
-
-		*//*MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.add("email", email);
-		map.add("password", password);
-*//*
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		HttpEntity<JSONObject> request = new HttpEntity<>(userLoginInfo, headers);
-		String url = "http://localhost:1515/login";
-		ResponseEntity<String> response;
-		response = restTemplate.postForEntity(url, request, String.class);*/
-
-		//return response.toString();
-
-/*
-
-		JSONObject userLoginInfo = new JSONObject();
-
-		userLoginInfo.put("email",email);
-		userLoginInfo.put("password",password);
-*/
-
-
-
-
-		/*session.setAttribute("login", true);
-		//session.setAttribute("user", login_user);
-		return "redirect:/";*/
 	}
 
 

@@ -53,9 +53,10 @@
 
                     <div class="col">
                         <label style="float: left">Enter Date</label>
+
                         <input class="form-control" type="date" placeholder="Enter Date" id="date" name="date"
                                th:if="${news.date}"
-                               th:value="${news.date}">
+                               th:value="${news.date}" th:text="${news.date}">
                         <div class="createNewsError">
                             <span th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></span>
                         </div>

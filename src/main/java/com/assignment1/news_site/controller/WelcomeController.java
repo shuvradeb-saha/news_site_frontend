@@ -60,8 +60,10 @@ public class WelcomeController {
 		try {
 			if(restTemplate.getForObject(url, String.class) != null){
 				response = restTemplate.getForObject(url, String.class);
+
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 
 			return new ModelAndView("error/error_404");
 		}
