@@ -97,6 +97,7 @@ public class News {
 			", title='" + title + '\'' +
 			", body='" + body + '\'' +
 			", author='" + author + '\'' +
+			", date=" + date +
 			'}';
 	}
 }

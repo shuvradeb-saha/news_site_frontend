@@ -31,14 +31,13 @@ public class ViewNewsController {
 			not_found = true;
 		} else {
 
-			String viewNewsUrl = BASE_URL+"view/json?id="+id;
-			ResponseEntity response = restTemplate.getForEntity(viewNewsUrl,News.class);
+			String viewNewsUrl = BASE_URL + "view/json?id=" + id;
+			ResponseEntity response = restTemplate.getForEntity(viewNewsUrl, News.class);
 			//System.out.println(response.toString());
 			if (response.getBody() == null) {
 				not_found = true;
 			} else {
 				News showNews = (News) response.getBody();
-				System.out.println(showNews.toString());
 				model.addAttribute("showNews", showNews);
 			}
 		}
