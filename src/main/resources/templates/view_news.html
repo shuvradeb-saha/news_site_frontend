@@ -23,7 +23,7 @@
                 </div>
 
                 <p align="center"><h3 th:text="${showNews.author}"></h3> </p>
-                <p align="center"><h4 th:text="${showNews.date}"></h4> </p>
+                <p align="center"><h4 th:text="${#dates.format(showNews.date,'yyyy-MM-dd')}"></h4> </p>
                 <div th:if="${message}" th:text="${message}" th:class="${'alert ' + alertClass}"/>
             </div><hr>
             <div class="container">

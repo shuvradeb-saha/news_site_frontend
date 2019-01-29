@@ -36,8 +36,8 @@
                         <h2 style="color: white;">Login Here</h2>
                     </div>
                     <div class="alert alert-success" th:if="${saved}" th:text="${saved}"></div>
-                    <div class="alert alert-danger" th:if="${notFound}" th:text="${notFound}"></div>
-                    <div class="alert alert-danger" th:if="${wrongPassword}" th:text="${wrongPassword}"></div>
+
+                    <div class="alert alert-danger" th:if="${wrong}" th:text="${wrong}"></div>
                     <br>
                     <form method="post" th:action="@{/login}" th:object="${user}">
                         <div class="form-row">

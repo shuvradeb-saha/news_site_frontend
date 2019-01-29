@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
-
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.text.ParseException;
 
@@ -34,14 +34,19 @@ public class CreateNewsController {
 	}
 
 	@RequestMapping("/create")
-	public String getCreateNewsPage(Model model) {
-
+	public String getCreateNewsPage(Model model, HttpSession session) {
+		if (session.getAttribute("user") == null) {
+			return "error";
+		}
 		model.addAttribute("news", new News());
 		return "create_news_form";
 	}
 
 	@PostMapping("/submit")
-	public String saveSubmittedNews(@Valid @ModelAttribute News news, BindingResult bindingResult) {
+	public String saveSubmittedNews(@Valid @ModelAttribute News news, BindingResult bindingResult, HttpSession session) {
+		if (session.getAttribute("user") == null) {
+			return "error";
+		}
 		if (bindingResult.hasErrors()) {
 			return "create_news_form";
 		}
@@ -58,7 +63,12 @@ public class CreateNewsController {
 	}
 
 	@RequestMapping("/edit")
-	public ModelAndView showDataToEdit(@ModelAttribute("id") Integer id) throws ParseException {
+	public ModelAndView showDataToEdit(@ModelAttribute("id") Integer id , HttpSession session) throws ParseException {
+		if (session.getAttribute("user") == null) {
+			return new ModelAndView("error");
+		}
+
+
 		ModelAndView modelAndView = new ModelAndView("update_news_form");
 		String editUrl = BASE_URL + "edit?id=" + id;
 		ResponseEntity response = restTemplate.getForEntity(editUrl, News.class);
@@ -68,18 +78,18 @@ public class CreateNewsController {
 			news = (News) response.getBody();
 			modelAndView.addObject("news", news);
 		}
-
 		return modelAndView;
 	}
 
 	@RequestMapping("/updateNews")
-	public String updateNews(@Valid @ModelAttribute News news, @ModelAttribute("id") Integer id, BindingResult bindingResult, Model model) {
-
+	public String updateNews(@Valid @ModelAttribute News news, @ModelAttribute("id") Integer id, BindingResult bindingResult, Model model,HttpSession session) {
+		if (session.getAttribute("user") == null) {
+			return "error";
+		}
 		if (bindingResult.hasErrors()) {
 			return "update_news_form";
 		}
 		news.setId(id);
-
 		String updateUrl = BASE_URL + "update-news?id=" + id;
 		HttpEntity<News> request = new HttpEntity<>(news);
 		restTemplate.put(updateUrl, request, String.class);
@@ -87,8 +97,10 @@ public class CreateNewsController {
 	}
 
 	@RequestMapping("/remove")
-	public String removeNews(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes) {
-
+	public String removeNews(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes,HttpSession session) {
+		if (session.getAttribute("user") == null) {
+			return "error";
+		}
 		String removeNewsUrl = BASE_URL + "remove?id=" + id;
 		restTemplate.delete(removeNewsUrl);
 		redirectAttributes.addFlashAttribute("message", "News Successfully Removed");

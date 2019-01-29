@@ -2,6 +2,7 @@ package com.assignment1.news_site.controller;
 
 import com.assignment1.news_site.model.User;
 import com.assignment1.news_site.service.UserService;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -102,39 +101,45 @@ public class UserController {
 		return "login";
 	}
 
-	@PostMapping("/login")
-	public @ResponseBody
-	String loginVerification(@Valid @ModelAttribute User user, BindingResult bindingResult, HttpSession session) throws JSONException {
+
+	@RequestMapping("/login")
+	public String loginVerification(@Valid @ModelAttribute User user, BindingResult bindingResult, Model model, HttpSession session) {
+		if (session.getAttribute("user") != null) {
+			return "redirect:/";
+		}
+
 		if ((bindingResult.getFieldError("email") != null) || (bindingResult.getFieldError("password") != null)) {
 			return "login";
 		}
+
 		String email = user.getEmail();
 		String password = user.getPassword();
 
-		RestTemplate restTemplate = new RestTemplate();
 
-		HttpHeaders httpHeaders = new HttpHeaders();
-		httpHeaders.setContentType(MediaType.APPLICATION_JSON);
-		httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		final String plainCreds = email + ":" + password;
+
+		final byte[] plainCredsBytes = plainCreds.getBytes();
+		final byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
+		final String base64Creds = new String(base64CredsBytes);
+
+		final HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", "Basic " + base64Creds);
+		final HttpEntity<String> request = new HttpEntity<String>(headers);
+		ResponseEntity response = null;
 		try {
-			JSONObject jsonCredentials = new JSONObject();
-			jsonCredentials.put("email", email);
-			jsonCredentials.put("password", password);
-
-			HttpEntity<String> entityCredentials = new HttpEntity<>(jsonCredentials.toString(), httpHeaders);
-			String url = "http://localhost:1515/login";
-			ResponseEntity<String> responseEntity = restTemplate.exchange(url,
-				HttpMethod.POST, entityCredentials, String.class);
-			if (responseEntity != null) {
-				return responseEntity.toString();
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
+			response = restTemplate.exchange("http://localhost:1515/user/login", HttpMethod.GET, request, User.class);
+		} catch (HttpClientErrorException e) {
 		}
-		return null;
-	}
 
+		if (response == null) {
+			model.addAttribute("wrong", "Email and Password Doestnot Match");
+			return "login";
+		}
+		User loggedInUser = (User) response.getBody();
+		session.setAttribute("user", loggedInUser);
+		session.setAttribute("login", true);
+		return "redirect:/";
+	}
 
 	@PostMapping("/logout")
 	public String logout(HttpSession session) {
