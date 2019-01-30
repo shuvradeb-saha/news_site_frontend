@@ -19,10 +19,7 @@ public class NewsSiteApplication {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	public RestTemplate restTemplate(){
-    	return new RestTemplate();
-	}
+
 
 }
 

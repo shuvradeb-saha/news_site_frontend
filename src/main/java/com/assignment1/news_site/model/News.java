@@ -1,6 +1,7 @@
 package com.assignment1.news_site.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -34,6 +35,16 @@ public class News {
 	@Column(name = "date", nullable = false)
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
 	private Date date;
+
+	private Integer userId;
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
 
 	public Date getDate() {
 		return date;
@@ -69,7 +80,6 @@ public class News {
 		this.author = author;
 		this.date = date;
 	}
-
 	public News() {
 	}
 

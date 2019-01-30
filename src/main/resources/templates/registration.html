@@ -40,31 +40,44 @@
                     <form method="post" th:action="@{/signup}" th:object="${user}">
                         <div class="form-row">
                             <div class="col-4">
-                                <input class="form-control" type="text" th:field="${user.fullName}" placeholder="Enter Full Name">
+                                <input class="form-control" type="text" th:field="${user.fullName}"
+                                       placeholder="Enter Full Name">
                                 <br>
-                                <div class="alert alert-danger" th:if="${#fields.hasErrors('fullName')}" th:errors="${user.fullName}">
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('fullName')}"
+                                     th:errors="${user.fullName}">
                                 </div>
                             </div>
                             <br>
                             <div class="col-4">
-                                <input class="form-control" type="text" th:field="${user.email}"  placeholder="Enter Email"><br>
-                                <div class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="${user.email}"></div>
+                                <input class="form-control" type="text" th:field="${user.email}"
+                                       placeholder="Enter Email"><br>
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('email')}"
+                                     th:errors="${user.email}"></div>
                                 <div class="alert alert-danger" th:if="${emailError}" th:text="${emailError}"></div>
                             </div>
                             <br>
                             <div class="col-4">
-                                <input class="form-control" type="password" th:field="${user.password}" placeholder="Enter Password"><br>
-                                <div class="alert alert-danger" th:if="${#fields.hasErrors('password')}" th:errors="${user.password}"></div>
+                                <input class="form-control" type="password" th:field="${user.password}"
+                                       placeholder="Enter Password"><br>
+                                <div class="alert alert-danger" th:if="${#fields.hasErrors('password')}"
+                                     th:errors="${user.password}"></div>
                             </div>
                             <br>
                             <div class="col-4">
-                                <input class="form-control" type="password" id="confirmPass" name="confirmPass" placeholder="Confirm Password"><br>
-                                <div class="alert alert-danger" th:if="${passwordError}" th:text="${passwordError}"></div>
+                                <input class="form-control" type="password" id="confirmPass" name="confirmPass"
+                                       placeholder="Confirm Password"><br>
+                                <div class="alert alert-danger" th:if="${passwordError}"
+                                     th:text="${passwordError}"></div>
                             </div>
                             <br>
                             <div class="col-4">
-                                <input style="float: left" id="submitNews" class="btn btn-success" type="submit" value="Register">
-                                <a th:href="@{/login-page}"><button id="mybtn" style="float: right" type="button" class="btn btn-warning" >Login</button></a>
+                                <input style="float: left" id="submitNews" class="btn btn-success" type="submit"
+                                       value="Register">
+                                <a th:href="@{/login-page}">
+                                    <button id="mybtn" style="float: right" type="button" class="btn btn-warning">
+                                        Login
+                                    </button>
+                                </a>
                             </div>
                             <br>
                         </div>

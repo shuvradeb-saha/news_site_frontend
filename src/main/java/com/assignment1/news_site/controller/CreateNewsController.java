@@ -1,13 +1,12 @@
 package com.assignment1.news_site.controller;
 
+import com.assignment1.news_site.exception.ResourceNotFoundException;
 import com.assignment1.news_site.model.News;
 
-import com.assignment1.news_site.service.NewsService;
 
-
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.assignment1.news_site.model.User;
+import org.springframework.http.*;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,18 +19,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.text.ParseException;
+
 
 @Controller
 public class CreateNewsController {
-	private NewsService newsService;
-	private RestTemplate restTemplate;
-	private String BASE_URL = "http://localhost:1515/";
-
-	public CreateNewsController(NewsService newsService, RestTemplate restTemplate) {
-		this.newsService = newsService;
-		this.restTemplate = restTemplate;
-	}
+	private String BASE_URL = "http://localhost:1515/user/";
 
 	@RequestMapping("/create")
 	public String getCreateNewsPage(Model model, HttpSession session) {
@@ -50,62 +42,92 @@ public class CreateNewsController {
 		if (bindingResult.hasErrors()) {
 			return "create_news_form";
 		}
-		String createNewsUrl = BASE_URL + "submit-news";
+		User user = (User) session.getAttribute("user");
+		Integer id = user.getId();
+		news.setAuthor(user.getFullName());
+		String createNewsUrl = BASE_URL + "submit-news/" + id;
+		RestTemplate restTemplate = authenticate(session);
 		HttpEntity<News> request = new HttpEntity<>(news);
-		ResponseEntity response = null;
-		try {
-			response = restTemplate.postForEntity(createNewsUrl, request, String.class);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		ResponseEntity response = restTemplate.postForEntity(createNewsUrl, request, String.class);
+		if (!response.getStatusCode().equals(HttpStatus.OK))
+			return "error";
 		return "redirect:/";
 	}
 
 	@RequestMapping("/edit")
-	public ModelAndView showDataToEdit(@ModelAttribute("id") Integer id , HttpSession session) throws ParseException {
+	public ModelAndView showDataToEdit(@ModelAttribute("id") Integer id, HttpSession session) {
 		if (session.getAttribute("user") == null) {
 			return new ModelAndView("error");
 		}
-
-
+		User user = (User) session.getAttribute("user");
+		Integer userId = user.getId();
 		ModelAndView modelAndView = new ModelAndView("update_news_form");
-		String editUrl = BASE_URL + "edit?id=" + id;
-		ResponseEntity response = restTemplate.getForEntity(editUrl, News.class);
-		News news = null;
-
+		String editUrl = BASE_URL + "edit/" + userId + "?id=" + id;
+		RestTemplate restTemplate = authenticate(session);
+		ResponseEntity response = restTemplate.exchange(editUrl, HttpMethod.GET, null, News.class);
+		News news;
 		if (response.getStatusCode().equals(HttpStatus.OK)) {
 			news = (News) response.getBody();
 			modelAndView.addObject("news", news);
+		} else if (response.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+			throw new ResourceNotFoundException();
+		} else {
+			return new ModelAndView("error");
 		}
 		return modelAndView;
 	}
 
 	@RequestMapping("/updateNews")
-	public String updateNews(@Valid @ModelAttribute News news, @ModelAttribute("id") Integer id, BindingResult bindingResult, Model model,HttpSession session) {
+	public String updateNews(@Valid @ModelAttribute News news, @ModelAttribute("id") Integer id, BindingResult bindingResult, HttpSession session) {
 		if (session.getAttribute("user") == null) {
 			return "error";
 		}
 		if (bindingResult.hasErrors()) {
 			return "update_news_form";
 		}
+		User user = (User) session.getAttribute("user");
+		Integer userId = user.getId();
+
 		news.setId(id);
-		String updateUrl = BASE_URL + "update-news?id=" + id;
+		news.setUserId(userId);
+		news.setAuthor(user.getFullName());
+
+		String updateUrl = BASE_URL + "update-news/" + userId + "?id=" + id;
+		RestTemplate restTemplate = authenticate(session);
 		HttpEntity<News> request = new HttpEntity<>(news);
-		restTemplate.put(updateUrl, request, String.class);
-		return "redirect:/";
+		ResponseEntity response = restTemplate.exchange(updateUrl, HttpMethod.PUT, request, String.class);
+		if (response.getStatusCode().equals(HttpStatus.OK)) {
+			return "redirect:/";
+		} else if (response.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+			throw new ResourceNotFoundException();
+		} else {
+			return "error";
+		}
 	}
 
 	@RequestMapping("/remove")
-	public String removeNews(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes,HttpSession session) {
+	public String removeNews(@RequestParam("id") Integer id, RedirectAttributes redirectAttributes, HttpSession session) {
 		if (session.getAttribute("user") == null) {
 			return "error";
 		}
-		String removeNewsUrl = BASE_URL + "remove?id=" + id;
-		restTemplate.delete(removeNewsUrl);
+		User user = (User) session.getAttribute("user");
+		Integer userId = user.getId();
+		String removeNewsUrl = BASE_URL + "remove/" + userId + "?id=" + id;
+		RestTemplate restTemplate = authenticate(session);
+		ResponseEntity response = restTemplate.exchange(removeNewsUrl, HttpMethod.DELETE, null, String.class);
+		if (response.getStatusCode().equals(HttpStatus.FORBIDDEN))
+			return "error";
 		redirectAttributes.addFlashAttribute("message", "News Successfully Removed");
 		redirectAttributes.addFlashAttribute("alertClass", "alert-success");
 		return "redirect:/";
+	}
+
+	private RestTemplate authenticate(HttpSession session) {
+		String email = (String) session.getAttribute("email");
+		String password = (String) session.getAttribute("password");
+		RestTemplate myRestTemplate = new RestTemplate();
+		myRestTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(email, password));
+		return myRestTemplate;
 	}
 
 }

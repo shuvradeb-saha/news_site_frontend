@@ -78,8 +78,8 @@
 
 
 <div class="container">
-    <div class="row">
-        <div style="padding: 5px;margin-top: 30px;border: darkblue;" th:each="news : ${newsList}">
+    <div class="row well well-sm">
+        <div  style="padding: 5px;margin-top: 30px;border: darkblue;" th:each="news : ${newsList}">
             <span><h3 th:text="${news.title}"></h3></span>
             <div>
                 <span>By </span><strong th:text="${news.author}"></strong><span> On </span><strong
@@ -91,12 +91,12 @@
                 <div style="float: left">
                         <span>
                             <a th:name="id" th:href="@{'view/json?id='+${news.id}}">
-                                <button style="background-color: darkslateblue;color: white" type="button" class="btn">JSON</button>
+                                <button style="background-color: darkslateblue;color: white" type="button" class="btn">View JSON</button>
                             </a>
                         </span>
-                        <span>
+                    <span>
                              <a th:name="id" th:href="@{'view/xml?id='+${news.id}}">
-                                 <button type="button" class="btn btn-primary ">XML</button>
+                                 <button type="button" class="btn btn-primary ">View XML</button>
                              </a>
                         </span>
                     <span>
@@ -105,12 +105,14 @@
                              </a>
                     </span>
                 </div>
-                <div th:if="${session.login == true}">
+
+
+                <div th:if="${session.userId == news.userId}">
                     <div style="float: right">
 
                         <span>
                             <a class="btn" th:name="id" th:href="@{'/edit?id='+${news.getId()}}">
-                                <button type="button" class="btn btn-info ">Edit</button>
+                                <button type="button" class="btn btn-info ">Edit News</button>
                             </a>
                         </span>
                         <span>
@@ -122,54 +124,54 @@
                         </span>
                     </div>
                 </div>
-
             </div>
-
-        </div></div></div>
+        </div>
+    </div>
+</div>
 <div class="container">
-        <div class="row">
-            <div class="col text-center">
-                <div class="row">
-                    <div th:if="${totalPages > 0}" class="form-group col-md-1">
-                        <select class="form-control pagination" id="pageSizeSelect">
-                            <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}"
-                                    th:value="${pageSize}"
-                                    th:selected="${pageSize} == ${selectedPageSize}"></option>
-                        </select>
-                    </div>
-                    <div th:if="${totalPages > 0}"
-                         class="form-group col-md-11 pagination-centered">
-                        <ul class="pagination">
-                            <li th:class="${number == 0} ? disabled">
-                                <a class="page-link" th:href="@{/(pageSize=${selectedPageSize}, page=1)}">«</a>
-                            </li>
-                            <li th:class="${number == 0} ? disabled"><a
-                                    class="page-link"
-                                    th:href="@{/(pageSize=${selectedPageSize}, page=${number})}">←</a>
-                            </li>
-                            <li
-                                    th:class="${number == (page - 1)} ? 'active pointer-disabled'"
-                                    th:each="page : ${#numbers.sequence(pagerStart, pagerEnd)}">
-                                <a class="page-link"
-                                   th:href="@{/(pageSize=${selectedPageSize}, page=${page})}"
-                                   th:text="${page}"></a>
-                            </li>
-                            <li
-                                    th:class="${number + 1 == totalPages} ? disabled">
-                                <a class="page-link"
-                                   th:href="@{/(pageSize=${selectedPageSize}, page=${number + 2})}">→</a>
-                            </li>
-                            <li
-                                    th:class="${number + 1 == totalPages} ?  disabled">
-                                <a class="page-link"
-                                   th:href="@{/(pageSize=${selectedPageSize}, page=${totalPages})}">»</a>
-                            </li>
-                        </ul>
-                    </div>
+    <div class="row">
+        <div class="col text-center">
+            <div class="row">
+                <div th:if="${totalPages > 0}" class="form-group col-md-1">
+                    <select class="form-control pagination" id="pageSizeSelect">
+                        <option th:each="pageSize : ${pageSizes}" th:text="${pageSize}"
+                                th:value="${pageSize}"
+                                th:selected="${pageSize} == ${selectedPageSize}"></option>
+                    </select>
+                </div>
+                <div th:if="${totalPages > 0}"
+                     class="form-group col-md-11 pagination-centered">
+                    <ul class="pagination">
+                        <li th:class="${number == 0} ? disabled">
+                            <a class="page-link" th:href="@{/(pageSize=${selectedPageSize}, page=1)}">«</a>
+                        </li>
+                        <li th:class="${number == 0} ? disabled"><a
+                                class="page-link"
+                                th:href="@{/(pageSize=${selectedPageSize}, page=${number})}">←</a>
+                        </li>
+                        <li
+                                th:class="${number == (page - 1)} ? 'active pointer-disabled'"
+                                th:each="page : ${#numbers.sequence(pagerStart, pagerEnd)}">
+                            <a class="page-link"
+                               th:href="@{/(pageSize=${selectedPageSize}, page=${page})}"
+                               th:text="${page}"></a>
+                        </li>
+                        <li
+                                th:class="${number + 1 == totalPages} ? disabled">
+                            <a class="page-link"
+                               th:href="@{/(pageSize=${selectedPageSize}, page=${number + 2})}">→</a>
+                        </li>
+                        <li
+                                th:class="${number + 1 == totalPages} ?  disabled">
+                            <a class="page-link"
+                               th:href="@{/(pageSize=${selectedPageSize}, page=${totalPages})}">»</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 
 <script src="https://code.jquery.com/jquery-1.11.1.min.js"
