@@ -9,30 +9,23 @@ import javax.validation.constraints.Size;
 import java.util.Date;
 
 
-@Entity
-@Table(name = "news")
+
 public class News {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
 
 	@Size(min = 1, max = 200, message = "Title must be between 10 and 100 characters")
-	@Column(name = "title", nullable = false)
 	private String title;
 
 	@Size(min = 1, max = 2000, message = "Body must be between 10 and 2000 characters")
-	@Column(name = "body", nullable = false)
 	private String body;
 
 	@Size(min = 1, max = 100, message = "Author name must be between 10 and 100 characters")
-	@Column(name = "author", nullable = false)
 	private String author;
 
 	@Temporal(TemporalType.DATE)
 	@DateTimeFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message = "Date Cannot be empty")
-	@Column(name = "date", nullable = false)
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
 	private Date date;
 

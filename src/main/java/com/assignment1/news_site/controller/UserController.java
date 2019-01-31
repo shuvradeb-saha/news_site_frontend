@@ -2,6 +2,7 @@ package com.assignment1.news_site.controller;
 
 import com.assignment1.news_site.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -20,8 +21,9 @@ import java.util.Arrays;
 public class UserController {
 
 	private RestTemplate restTemplate;
-	private String BASE_URL;
 
+	@Value("${BASE_URL}")
+	private String BASE_URL;
 
 	@Autowired
 	public UserController() {
@@ -34,7 +36,7 @@ public class UserController {
 				MediaType.APPLICATION_OCTET_STREAM));
 		restTemplate.getMessageConverters().add(mappingJackson2HttpMessageConverter);
 
-		BASE_URL = "http://localhost:1515/";
+
 	}
 
 	@GetMapping("/signup-page")

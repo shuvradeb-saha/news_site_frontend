@@ -51,14 +51,19 @@
                         </div>
                     </div>
                 </div>
-
                 <div th:if="${session.login == true}">
                     <div style="float: right;margin-left: 10px">
                         <div style="float:right;margin-top: 10px" class="d-inline-block col-5 text-center">
-                            <form method="post" th:action="@{/logout}">
-                                <input style="width: 80px;background-color: lightseagreen " type="submit" value="Logout"
-                                       class="btn">
-                            </form>
+                            <div style="float: left">
+                                <i class="glyphicon glyphicon-user"></i>
+                                <span style="color: white;margin-right: 5px;" th:text="${session.user.fullName}"></span>
+                            </div>
+                                <form method="post" th:action="@{/logout}">
+                                    <input style="width: 100px;background-color: lightseagreen " type="submit"
+                                           value="Logout"
+                                           class="btn">
+                                </form>
+
                         </div>
                     </div>
                 </div>
@@ -79,10 +84,10 @@
 
 <div class="container">
     <div class="row well well-sm">
-        <div  style="padding: 5px;margin-top: 30px;border: darkblue;" th:each="news : ${newsList}">
+        <div style="padding: 5px;margin-top: 30px;border: darkblue;" th:each="news : ${newsList}">
             <span><h3 th:text="${news.title}"></h3></span>
             <div>
-                <span>By </span><strong th:text="${news.author}"></strong><span> On </span><strong
+                <span>By </span><strong th:text="${news.author}"></strong><span> on </span><strong
                     th:text="${#dates.format(news.date,'yyyy-MM-dd')}">Date</strong>
             </div>
             <div style="margin: 10px 0px 10px 0px" th:text="${news.body}">

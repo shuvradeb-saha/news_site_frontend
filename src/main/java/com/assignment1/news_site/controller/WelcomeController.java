@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,27 +25,27 @@ public class WelcomeController {
 	private static final int INITIAL_PAGE_SIZE = 3;
 	private static final int[] PAGE_SIZES = {3, 5, 6, 10};
 
+	@Value("${BASE_URL}")
+	private String BASE_URL;
+
 	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	@GetMapping("/")
 	public ModelAndView getWelcomePage(@RequestParam(value = "pageSize") Optional<Integer> pageSize,
 									   @RequestParam("page") Optional<Integer> page) throws JSONException {
-
 		ModelAndView modelAndView = new ModelAndView("welcome");
 
 		int evalPageSize = pageSize.orElse(INITIAL_PAGE_SIZE);
 		int evalPage = (page.orElse(0) < 1) ? INITIAL_PAGE : page.get() - 1;
 		RestTemplate restTemplate = new RestTemplate();
-		String url = "http://localhost:1515/?pageSize=" + evalPageSize + "&page=" + evalPage;
+		String url = BASE_URL+"?pageSize=" + evalPageSize + "&page=" + evalPage;
 		String response = null;
 		try {
 			if (restTemplate.getForObject(url, String.class) != null) {
 				response = restTemplate.getForObject(url, String.class);
-
 			}
 		} catch (Exception e) {
 			return new ModelAndView("error/error_404");
 		}
-
 
 		JSONObject newsListJsonResponse = new JSONObject(response);
 
@@ -59,6 +60,7 @@ public class WelcomeController {
 		}
 
 		List<News> newsObjectList = new ArrayList<>();
+
 		for (int i = 0; i < jsonArray.length(); i++) {
 			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 			News obj = new Gson().fromJson(jsonObject.toString(), News.class);
@@ -74,9 +76,6 @@ public class WelcomeController {
 		modelAndView.addObject("pagerEnd", pagerEnd);
 		modelAndView.addObject("viewNews", new News());
 
-
 		return modelAndView;
-
-
 	}
 }

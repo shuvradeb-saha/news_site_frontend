@@ -5,6 +5,7 @@ import com.assignment1.news_site.model.News;
 
 
 import com.assignment1.news_site.model.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.stereotype.Controller;
@@ -16,14 +17,14 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 
 @Controller
 public class CreateNewsController {
-	private String BASE_URL = "http://localhost:1515/user/";
+	@Value("${BASE_URL}")
+	private String BASE_URL;
 
 	@RequestMapping("/create")
 	public String getCreateNewsPage(Model model, HttpSession session) {
@@ -44,11 +45,14 @@ public class CreateNewsController {
 		}
 		User user = (User) session.getAttribute("user");
 		Integer id = user.getId();
-		news.setAuthor(user.getFullName());
-		String createNewsUrl = BASE_URL + "submit-news/" + id;
+		String createNewsUrl = BASE_URL + "user/submit-news/" + id;
+		System.out.println("submit method "+createNewsUrl);
 		RestTemplate restTemplate = authenticate(session);
+
+		System.out.println("News: --"+news);
+
 		HttpEntity<News> request = new HttpEntity<>(news);
-		ResponseEntity response = restTemplate.postForEntity(createNewsUrl, request, String.class);
+		ResponseEntity response = restTemplate.exchange(createNewsUrl, HttpMethod.POST, request, String.class);
 		if (!response.getStatusCode().equals(HttpStatus.OK))
 			return "error";
 		return "redirect:/";
@@ -62,7 +66,7 @@ public class CreateNewsController {
 		User user = (User) session.getAttribute("user");
 		Integer userId = user.getId();
 		ModelAndView modelAndView = new ModelAndView("update_news_form");
-		String editUrl = BASE_URL + "edit/" + userId + "?id=" + id;
+		String editUrl = BASE_URL + "user/edit/" + userId + "?id=" + id;
 		RestTemplate restTemplate = authenticate(session);
 		ResponseEntity response = restTemplate.exchange(editUrl, HttpMethod.GET, null, News.class);
 		News news;
@@ -92,7 +96,7 @@ public class CreateNewsController {
 		news.setUserId(userId);
 		news.setAuthor(user.getFullName());
 
-		String updateUrl = BASE_URL + "update-news/" + userId + "?id=" + id;
+		String updateUrl = BASE_URL + "user/update-news/" + userId + "?id=" + id;
 		RestTemplate restTemplate = authenticate(session);
 		HttpEntity<News> request = new HttpEntity<>(news);
 		ResponseEntity response = restTemplate.exchange(updateUrl, HttpMethod.PUT, request, String.class);
@@ -112,7 +116,7 @@ public class CreateNewsController {
 		}
 		User user = (User) session.getAttribute("user");
 		Integer userId = user.getId();
-		String removeNewsUrl = BASE_URL + "remove/" + userId + "?id=" + id;
+		String removeNewsUrl = BASE_URL + "user/remove/" + userId + "?id=" + id;
 		RestTemplate restTemplate = authenticate(session);
 		ResponseEntity response = restTemplate.exchange(removeNewsUrl, HttpMethod.DELETE, null, String.class);
 		if (response.getStatusCode().equals(HttpStatus.FORBIDDEN))

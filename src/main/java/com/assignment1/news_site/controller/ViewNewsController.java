@@ -3,6 +3,7 @@ package com.assignment1.news_site.controller;
 import com.assignment1.news_site.exception.ResourceNotFoundException;
 import com.assignment1.news_site.model.News;
 import com.fasterxml.jackson.xml.XmlMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,7 +17,9 @@ import java.io.IOException;
 @Controller
 public class ViewNewsController {
 
-	private String BASE_URL = "http://localhost:1515/";
+	@Value("${BASE_URL}")
+	private String BASE_URL;
+
 
 	@RequestMapping("/view")
 	public String viewThisNews(@ModelAttribute("id") Integer id, Model model) {
@@ -25,13 +28,11 @@ public class ViewNewsController {
 			not_found = true;
 		} else {
 			String viewNewsUrl = BASE_URL + "view/json?id=" + id;
-
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity response = restTemplate.getForEntity(viewNewsUrl, News.class);
 			if (response.getBody() == null) {
 				not_found = true;
 			} else {
-
 				News showNews = (News) response.getBody();
 				model.addAttribute("showNews", showNews);
 			}
