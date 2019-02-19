@@ -2,7 +2,6 @@ package com.assignment1.news_site.controller;
 
 import com.assignment1.news_site.exception.ResourceNotFoundException;
 import com.assignment1.news_site.model.News;
-import com.fasterxml.jackson.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,7 +18,6 @@ public class ViewNewsController {
 
 	@Value("${BASE_URL}")
 	private String BASE_URL;
-
 
 	@RequestMapping("/view")
 	public String viewThisNews(@ModelAttribute("id") Integer id, Model model) {
@@ -42,7 +40,6 @@ public class ViewNewsController {
 		return "view_news";
 	}
 
-
 	@GetMapping("/view/{format}")
 	public void viewNewsInDifferentFormat(@PathVariable("format") String format, @RequestParam("id") Integer id, HttpServletResponse response) throws IOException{
 		if (format.equals("json")) {
@@ -55,17 +52,10 @@ public class ViewNewsController {
 	}
 
 	private void showXML(HttpServletResponse httpServletResponse, Integer id) throws IOException {
-		String viewNewsUrl = BASE_URL + "view/json?id=" + id;
+		String viewNewsUrl = BASE_URL + "view/xml?id=" + id;
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity response = restTemplate.getForEntity(viewNewsUrl, News.class);
-		XmlMapper mapper = new XmlMapper();
-		String xml = null;
-		try {
-			xml = mapper.writeValueAsString(response.getBody());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		httpServletResponse.getWriter().print(xml);
+		ResponseEntity response = restTemplate.getForEntity(viewNewsUrl, String.class);
+		httpServletResponse.getWriter().print(response.getBody());
 	}
 
 	private void showJson(HttpServletResponse httpServletResponse, Integer id) throws IOException {

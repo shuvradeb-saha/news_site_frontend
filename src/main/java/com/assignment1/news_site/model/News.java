@@ -11,7 +11,6 @@ import java.util.Date;
 
 
 public class News {
-
 	private Integer id;
 
 	@Size(min = 1, max = 200, message = "Title must be between 10 and 100 characters")

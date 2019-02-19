@@ -109,14 +109,15 @@ public class UserController {
 		String password = user.getPassword();
 		RestTemplate myRestTemplate = new RestTemplate();
 		myRestTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(email, password));
+		ResponseEntity response = null;
+		try{
+			response = myRestTemplate.exchange("http://localhost:1515/user/login", HttpMethod.GET, null, User.class);
 
-		ResponseEntity response = myRestTemplate.exchange("http://localhost:1515/user/login", HttpMethod.GET, null, User.class);
-
-
-		if (response == null) {
-			model.addAttribute("wrong", "Email and Password Does Not Match");
+		}catch (Exception e){
+			model.addAttribute("wrong", "Your Credentials is not correct");
 			return "login";
 		}
+
 		User loggedInUser = (User) response.getBody();
 		session.setAttribute("user", loggedInUser);
 		if (loggedInUser != null) {
